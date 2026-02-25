@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+/* ============================================
+   PROYECTO: sek-app
+   Calendario escolar SEK Colombia
+   Configuracion CSS-First de Tailwind 4
+   ============================================ */
+
+/* ---------- Theme Configuration ---------- */
+@theme {
+  /* Colors - SEK Colombia Brand */
+  --color-primary: #263060;
+  --color-secondary: #2874fc;
+  --color-accent: #7a00df;
+  --color-gold: #f3b600;
+
+  /* Typography */
+  --font-sans: 'Lato', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ---------- Base Styles ---------- */
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-white text-gray-900 antialiased;
+  }
+}
+
+/* ---------- Component Classes ---------- */
+@layer components {
+  .container-app {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-6 py-2.5 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition-colors;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center px-6 py-2.5 border-2 border-primary text-primary font-medium rounded-lg hover:bg-primary hover:text-white transition-colors;
+  }
+}
+
+/* ---------- Utility Classes ---------- */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
