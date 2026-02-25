@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap');
 @import "tailwindcss";
 
 /* ============================================
@@ -14,8 +15,17 @@
   --color-accent: #7a00df;
   --color-gold: #f3b600;
 
+  /* Colors - Special Day Types */
+  --color-festivo: #dc2626;
+  --color-receso: #d97706;
+  --color-semana-santa: #9333ea;
+  --color-vacaciones: #16a34a;
+  --color-clausura: #7a00df;
+  --color-celebracion: #f3b600;
+
   /* Typography */
   --font-sans: 'Lato', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Playfair Display', Georgia, serif;
 }
 
 /* ---------- Base Styles ---------- */
@@ -42,6 +52,31 @@
   .btn-outline {
     @apply inline-flex items-center justify-center px-6 py-2.5 border-2 border-primary text-primary font-medium rounded-lg hover:bg-primary hover:text-white transition-colors;
   }
+
+  .hero-circle {
+    @apply rounded-full flex items-center justify-center;
+    background: linear-gradient(135deg, #263060 0%, #1a2040 100%);
+    box-shadow:
+      0 20px 60px rgba(38, 48, 96, 0.4),
+      0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  }
+
+  .day-cell {
+    @apply aspect-square flex flex-col items-center justify-center relative rounded-lg transition-all duration-200;
+  }
+
+  .cycle-badge {
+    @apply text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center leading-none;
+  }
+
+  .btn-icon {
+    @apply w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 hover:bg-gray-100 active:scale-95;
+  }
+
+  .month-nav-title {
+    @apply text-2xl tracking-tight;
+    font-family: var(--font-display);
+  }
 }
 
 /* ---------- Utility Classes ---------- */
@@ -49,4 +84,36 @@
   .text-balance {
     text-wrap: balance;
   }
+}
+
+/* ---------- Animations ---------- */
+@keyframes hero-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scoped animation classes — Tailwind cannot express @keyframes */
+.animate-hero-enter {
+  animation: hero-enter 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-fade-up {
+  animation: fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }

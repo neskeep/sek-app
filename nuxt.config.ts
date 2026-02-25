@@ -7,10 +7,67 @@ export default defineNuxtConfig({
 
   modules: [
     '@pinia/nuxt',
-    '@vueuse/nuxt'
+    '@vueuse/nuxt',
+    '@vite-pwa/nuxt',
   ],
 
   css: ['~/assets/css/main.css'],
+
+  app: {
+    baseURL: '/sek-app/',
+    head: {
+      meta: [
+        { name: 'theme-color', content: '#263060' },
+        { name: 'apple-mobile-web-app-capable', content: 'yes' },
+        { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
+      ],
+      link: [
+        { rel: 'apple-touch-icon', href: '/sek-app/icons/apple-touch-icon-180x180.png' },
+      ],
+    },
+  },
+
+  nitro: {
+    preset: 'github-pages',
+  },
+
+  pwa: {
+    registerType: 'autoUpdate',
+    manifest: {
+      name: 'SEK Colombia - Calendario Escolar',
+      short_name: 'SEK Calendario',
+      description: 'Calendario escolar del Colegio SEK Colombia con sistema rotativo de 6 dias',
+      theme_color: '#263060',
+      background_color: '#ffffff',
+      display: 'standalone',
+      orientation: 'portrait',
+      icons: [
+        {
+          src: 'icons/pwa-192x192.png',
+          sizes: '192x192',
+          type: 'image/png',
+        },
+        {
+          src: 'icons/pwa-512x512.png',
+          sizes: '512x512',
+          type: 'image/png',
+        },
+        {
+          src: 'icons/pwa-512x512.png',
+          sizes: '512x512',
+          type: 'image/png',
+          purpose: 'maskable',
+        },
+      ],
+    },
+    workbox: {
+      navigateFallback: undefined,
+      globPatterns: ['**/*.{js,css,html,png,svg,ico,woff2}'],
+    },
+    client: {
+      installPrompt: true,
+    },
+  },
 
   vite: {
     plugins: [

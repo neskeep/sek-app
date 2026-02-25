@@ -1,25 +1,20 @@
 <script setup lang="ts">
-const navigation = useNavigationStore()
-const { menuItems } = storeToRefs(navigation)
 </script>
 
 <template>
-  <header class="bg-white border-b border-gray-100">
+  <header class="bg-primary">
     <div class="container-app">
-      <nav class="flex items-center justify-between h-16">
-        <NuxtLink to="/" class="font-bold text-xl text-primary">
-          SEK Colombia
+      <nav class="flex items-center justify-between h-14 md:h-16" aria-label="Principal">
+        <NuxtLink to="/" class="flex items-center gap-3">
+          <img
+            src="/images/sek-logo.png"
+            alt="SEK Colombia"
+            class="h-8 md:h-10 w-auto"
+          />
         </NuxtLink>
-        <div class="hidden md:flex items-center gap-6">
-          <NuxtLink
-            v-for="item in menuItems"
-            :key="item.path"
-            :to="item.path"
-            class="text-gray-600 hover:text-primary transition-colors"
-          >
-            {{ item.name }}
-          </NuxtLink>
-        </div>
+        <span class="font-display text-white/90 text-lg md:text-xl tracking-tight">
+          Calendario
+        </span>
       </nav>
     </div>
   </header>
