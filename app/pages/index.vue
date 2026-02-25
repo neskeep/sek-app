@@ -23,5 +23,8 @@ definePageMeta({ layout: 'default' })
 
     <!-- PWA Install Banner -->
     <FeaturesInstallBanner />
+
+    <!-- Push Notification Banner -->
+    <FeaturesNotificationBanner />
   </div>
 </template>

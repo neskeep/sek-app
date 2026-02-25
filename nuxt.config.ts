@@ -5,6 +5,14 @@ export default defineNuxtConfig({
   future: { compatibilityVersion: 4 },
   devtools: { enabled: true },
 
+  runtimeConfig: {
+    vapidPrivateKey: '',
+    cronSecret: '',
+    public: {
+      vapidPublicKey: 'BFQQ7-eAN_y3hLyZReTilAn4dqt8emDhLRAAGaaTJCcI33QSTLzOLyzltUbbyZa4UGhKs6pf2NCwzRQJhqnkcfM',
+    },
+  },
+
   modules: [
     '@pinia/nuxt',
     '@vueuse/nuxt',
@@ -14,7 +22,6 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   app: {
-    baseURL: '/sek-app/',
     head: {
       meta: [
         { name: 'theme-color', content: '#263060' },
@@ -22,13 +29,9 @@ export default defineNuxtConfig({
         { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
       ],
       link: [
-        { rel: 'apple-touch-icon', href: '/sek-app/icons/apple-touch-icon-180x180.png' },
+        { rel: 'apple-touch-icon', href: '/icons/apple-touch-icon-180x180.png' },
       ],
     },
-  },
-
-  nitro: {
-    preset: 'github-pages',
   },
 
   pwa: {
@@ -63,6 +66,7 @@ export default defineNuxtConfig({
     workbox: {
       navigateFallback: undefined,
       globPatterns: ['**/*.{js,css,html,png,svg,ico,woff2}'],
+      importScripts: ['/sw-push.js'],
     },
     client: {
       installPrompt: true,
