@@ -1,6 +1,2 @@
-export interface MenuItem {
-  name: string
-  path: string
-  icon?: string
-  children?: MenuItem[]
-}
+// Shared TypeScript types
+// App-specific types are in types/calendar.ts

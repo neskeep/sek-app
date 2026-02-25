@@ -9,7 +9,7 @@ export default defineNuxtConfig({
     vapidPrivateKey: '',
     cronSecret: '',
     public: {
-      vapidPublicKey: 'BFQQ7-eAN_y3hLyZReTilAn4dqt8emDhLRAAGaaTJCcI33QSTLzOLyzltUbbyZa4UGhKs6pf2NCwzRQJhqnkcfM',
+      vapidPublicKey: '',
     },
   },
 

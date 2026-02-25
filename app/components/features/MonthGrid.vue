@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { WEEKDAY_HEADERS } from '~/data/constants'
+
 const {
   viewMonthName,
   viewYear,
@@ -11,8 +13,6 @@ const {
   canGoNext,
   canGoPrev,
 } = useCalendar()
-
-const weekdayHeaders = ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom']
 
 const isViewingCurrentMonth = computed(() => {
   return (
@@ -86,7 +86,7 @@ onMounted(() => {
       <!-- Weekday Headers -->
       <div class="grid grid-cols-7 mb-2">
         <div
-          v-for="day in weekdayHeaders"
+          v-for="day in WEEKDAY_HEADERS"
           :key="day"
           class="text-center text-[11px] font-semibold uppercase tracking-widest text-gray-400 py-2"
         >

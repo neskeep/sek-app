@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import type { CalendarDayEntry } from '~~/types/calendar'
+import { WEEKDAY_SHORT } from '~/data/constants'
 
 const { currentWeek, getCycleDayColor } = useCalendar()
-
-const dayNames = ['Lun', 'Mar', 'Mie', 'Jue', 'Vie']
 
 function cycleBadgeNumber(entry: CalendarDayEntry): string | null {
   return entry.info?.cycleDay?.replace('D', '') ?? null
@@ -39,7 +38,7 @@ function cycleBadgeNumber(entry: CalendarDayEntry): string | null {
             class="text-[11px] font-semibold uppercase tracking-wider"
             :class="entry.isToday ? 'text-white/70' : 'text-gray-400'"
           >
-            {{ dayNames[i] }}
+            {{ WEEKDAY_SHORT[i] }}
           </span>
 
           <!-- Day number -->

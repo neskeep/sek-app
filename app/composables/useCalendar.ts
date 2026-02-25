@@ -1,5 +1,6 @@
 import type { CalendarDayInfo, CalendarDayEntry, CycleDay, SpecialDayType } from '~~/types/calendar'
 import { calendarData, SCHOOL_YEAR_START, SCHOOL_YEAR_END } from '~/data/calendar-2025-2026'
+import { MONTH_NAMES } from '~/data/constants'
 
 // ---------------------------------------------------------------------------
 // Helpers internos
@@ -44,11 +45,6 @@ const CYCLE_DAY_COLORS: Record<CycleDay, string> = {
   D5: 'bg-primary/80 text-white',
   D6: 'bg-secondary/80 text-white',
 }
-
-const MONTH_NAMES = [
-  'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
-]
 
 // ---------------------------------------------------------------------------
 // Composable

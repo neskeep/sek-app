@@ -7,7 +7,9 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@pinia/nuxt": "^0.11.3",
@@ -21,8 +23,11 @@
     "web-push": "^3.6.7"
   },
   "devDependencies": {
+    "@nuxt/test-utils": "^4.0.0",
     "@types/web-push": "^3.6.4",
-    "tailwindcss": "^4.2.1"
+    "happy-dom": "^20.7.0",
+    "tailwindcss": "^4.2.1",
+    "vitest": "^4.0.18"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
