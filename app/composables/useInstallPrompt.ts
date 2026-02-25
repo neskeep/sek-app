@@ -74,10 +74,10 @@ export function useInstallPrompt() {
       if (Date.now() - dismissedAt < DISMISS_DURATION_MS) return
     }
 
-    // Mostrar despues de un delay para no ser intrusivo
+    // Mostrar despues de un breve delay
     setTimeout(() => {
       showBanner.value = true
-    }, 3000)
+    }, 1000)
   })
 
   // ---------------------------------------------------------------------------
