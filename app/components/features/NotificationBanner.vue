@@ -11,11 +11,19 @@ const {
 const { isIOS, isStandalone } = useInstallPrompt()
 
 const DISMISS_KEY = 'sek-notif-banner-dismissed'
+const DISMISS_DURATION_MS = 7 * 24 * 60 * 60 * 1000 // 7 dias
 const dismissed = ref(true) // Start hidden until onMounted
 const showAfterDelay = ref(false)
 
 onMounted(() => {
-  dismissed.value = localStorage.getItem(DISMISS_KEY) === 'true'
+  const dismissedAt = localStorage.getItem(DISMISS_KEY)
+  if (dismissedAt) {
+    const elapsed = Date.now() - Number(dismissedAt)
+    dismissed.value = elapsed < DISMISS_DURATION_MS
+    if (!dismissed.value) localStorage.removeItem(DISMISS_KEY)
+  } else {
+    dismissed.value = false
+  }
 
   // Delay 2000ms — after InstallBanner (which uses 1000ms)
   setTimeout(() => {
@@ -51,7 +59,7 @@ async function handleActivate() {
 function dismissBanner() {
   dismissed.value = true
   if (import.meta.client) {
-    localStorage.setItem(DISMISS_KEY, 'true')
+    localStorage.setItem(DISMISS_KEY, String(Date.now()))
   }
 }
 </script>

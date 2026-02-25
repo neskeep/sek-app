@@ -1,16 +1,16 @@
 # SEK App - Calendario Escolar SEK Colombia
 
 ## Descripcion
-PWA del calendario escolar del Colegio SEK Colombia con sistema rotativo de 6 dias (ano escolar 2025-2026). Deploy en GitHub Pages.
+PWA del calendario escolar del Colegio SEK Colombia con sistema rotativo de 6 dias (ano escolar 2025-2026). Deploy en Vercel con push notifications.
 
 ## Stack
 - **Framework:** Nuxt 4 (compatibilityVersion: 4)
 - **CSS:** Tailwind CSS 4 via `@tailwindcss/vite` (configuracion CSS-first, NO existe tailwind.config.ts)
 - **PWA:** @vite-pwa/nuxt (Workbox generateSW + precache)
-- **State:** Pinia
+- **Push:** Web Push API + Upstash Redis + Vercel Cron
 - **Utilities:** VueUse
 - **Package Manager:** pnpm
-- **Deploy:** GitHub Pages via GitHub Actions
+- **Deploy:** Vercel (auto-deploy from GitHub)
 
 ## Estructura del Proyecto
 
@@ -27,15 +27,17 @@ sek-app/
 │   ├── data/
 │   │   └── calendar-2025-2026.ts # Data del ano escolar (220 entradas)
 │   ├── layouts/                  # Layouts de pagina
-│   ├── pages/                    # Rutas del sitio
-│   └── stores/                   # Stores Pinia
+│   └── pages/                    # Rutas del sitio
+├── server/
+│   ├── api/push/                 # Push notification endpoints (subscribe, unsubscribe, send, test)
+│   └── utils/                    # calendar.ts (server copy), redis.ts
 ├── types/
 │   ├── index.ts                  # Types generales
 │   └── calendar.ts               # CycleDay, SpecialDayType, CalendarDayInfo, CalendarDayEntry
 ├── public/
 │   ├── images/sek-logo.png       # Logo del colegio
 │   └── icons/                    # Iconos PWA (192, 512, apple-touch)
-├── .github/workflows/deploy.yml  # Deploy a GitHub Pages
+├── vercel.json                   # Cron jobs for push notifications
 └── .claude/                      # Documentacion del proyecto
 ```
 
@@ -49,7 +51,7 @@ sek-app/
 ## Convenciones
 - **NO crear** `tailwind.config.ts` — toda config de Tailwind va en `main.css` con `@theme {}`
 - **NO usar** `@nuxtjs/tailwindcss` — se usa `@tailwindcss/vite` como plugin de Vite
-- **NO hardcodear** datos repetidos — usar stores de Pinia o data files
+- **NO hardcodear** datos repetidos — usar composables o data files
 - **Colores** se definen como `--color-nombre` en `@theme` y se usan como `bg-nombre`, `text-nombre`
 - **Componentes** siguen la convencion de carpetas: `ui/`, `layout/`, `features/`
 - **Auto-imports** habilitados para composables, stores y utils
@@ -63,5 +65,5 @@ sek-app/
 ## Comandos
 - `pnpm dev` — Servidor de desarrollo
 - `pnpm build` — Build de produccion
-- `pnpm generate` — Build estatico para GitHub Pages (.output/public/)
 - `pnpm preview` — Preview del build
+- `npx vitest run` — Ejecutar tests

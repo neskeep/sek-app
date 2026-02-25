@@ -11,6 +11,20 @@ const { getSpecialDayColor, getCycleDayColor } = useCalendar()
 
 const cycleNumber = computed(() => props.entry.info?.cycleDay?.replace('D', '') ?? null)
 
+const ariaLabel = computed(() => {
+  const parts = [String(props.entry.dayOfMonth)]
+  if (props.entry.info?.cycleDay) {
+    parts.push(`Dia ${props.entry.info.cycleDay.replace('D', '')} del ciclo`)
+  }
+  if (props.entry.info?.label) {
+    parts.push(props.entry.info.label)
+  }
+  if (props.entry.isToday) {
+    parts.push('Hoy')
+  }
+  return parts.join(', ')
+})
+
 const cellClasses = computed(() => {
   const classes: string[] = ['day-cell', 'cursor-default']
 
@@ -39,7 +53,7 @@ const cellClasses = computed(() => {
 </script>
 
 <template>
-  <div :class="cellClasses">
+  <div :class="cellClasses" role="gridcell" :aria-label="ariaLabel">
     <!-- Day number -->
     <span
       class="text-sm font-semibold leading-none"
@@ -78,7 +92,8 @@ const cellClasses = computed(() => {
     <!-- Special day label tooltip (on hover, for desktop) -->
     <span
       v-if="entry.info?.label && entry.isCurrentMonth"
-      class="absolute -bottom-0.5 left-1/2 -translate-x-1/2 text-[8px] leading-tight text-gray-400 truncate max-w-full px-0.5 hidden md:block"
+      class="absolute -bottom-0.5 left-1/2 -translate-x-1/2 text-[9px] leading-tight text-gray-400 truncate max-w-full px-0.5 hidden md:block"
+      aria-hidden="true"
     >
       {{ entry.info.label }}
     </span>

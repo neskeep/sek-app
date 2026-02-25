@@ -31,6 +31,16 @@ export default defineEventHandler(async (event) => {
   const { dateKey, info } = getTodayInfo()
   const { title, body } = buildNotificationMessage(dateKey, info)
 
+  // ----- Deduplication: prevent double notifications on the same day -----
+  const redis = getRedis()
+  const dedupKey = `push:last-sent:${dateKey}`
+  const alreadySent = await redis.get(dedupKey)
+  if (alreadySent) {
+    return { ok: true, sent: 0, failed: 0, date: dateKey, skipped: true }
+  }
+  // Mark as sent with 24h expiry
+  await redis.set(dedupKey, new Date().toISOString(), { ex: 86400 })
+
   const payload = JSON.stringify({
     title,
     body,
@@ -40,7 +50,6 @@ export default defineEventHandler(async (event) => {
   })
 
   // ----- Retrieve all subscriptions from Redis -----
-  const redis = getRedis()
   const endpoints = await redis.smembers('push:endpoints')
 
   if (!endpoints || endpoints.length === 0) {
