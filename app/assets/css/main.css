@@ -145,6 +145,28 @@
   animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+/* ---------- Bottom Sheet Transition ---------- */
+.sheet-enter-active {
+  transition: opacity 0.25s ease;
+}
+.sheet-enter-active > div:last-child {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.sheet-leave-active {
+  transition: opacity 0.2s ease;
+}
+.sheet-leave-active > div:last-child {
+  transition: transform 0.2s ease-in;
+}
+.sheet-enter-from,
+.sheet-leave-to {
+  opacity: 0;
+}
+.sheet-enter-from > div:last-child,
+.sheet-leave-to > div:last-child {
+  transform: translateY(100%);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-hero-enter,
   .animate-fade-up,
@@ -152,5 +174,11 @@
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
+  }
+  .sheet-enter-active,
+  .sheet-leave-active,
+  .sheet-enter-active > div:last-child,
+  .sheet-leave-active > div:last-child {
+    transition: none !important;
   }
 }

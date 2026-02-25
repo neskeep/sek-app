@@ -146,3 +146,21 @@ function generateCalendar(): Record<string, CalendarDayInfo> {
 // Exportacion principal
 // ---------------------------------------------------------------------------
 export const calendarData: Record<string, CalendarDayInfo> = generateCalendar()
+
+// ---------------------------------------------------------------------------
+// PARA ACTUALIZAR AL ANO ESCOLAR 2026-2027:
+// ---------------------------------------------------------------------------
+// 1. Crear archivo app/data/calendar-2026-2027.ts copiando este esqueleto
+// 2. Actualizar SCHOOL_YEAR_START y SCHOOL_YEAR_END con las nuevas fechas
+// 3. Actualizar specialDates con los festivos y recesos del nuevo ano:
+//    - Festivos colombianos (cambian cada ano los que son "trasladables")
+//    - Semanas de receso (verificar con el calendario oficial SEK)
+//    - Semana Santa (fechas moviles)
+//    - Vacaciones de fin de ano
+//    - Jornadas institucionales
+//    - Clausura
+// 4. Actualizar server/utils/calendar.ts con los mismos datos
+// 5. Actualizar useCalendar.ts: limites de navegacion (canGoNext, canGoPrev)
+// 6. El ciclo D1-D6 se reinicia cada ano escolar desde D1
+// 7. Correr tests: pnpm test
+// ---------------------------------------------------------------------------

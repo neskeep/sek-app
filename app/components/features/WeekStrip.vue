@@ -3,6 +3,7 @@ import type { CalendarDayEntry } from '~~/types/calendar'
 import { WEEKDAY_SHORT } from '~/data/constants'
 
 const { currentWeek, getCycleDayColor } = useCalendar()
+const { selectDay } = useDayDetail()
 
 function cycleBadgeNumber(entry: CalendarDayEntry): string | null {
   return entry.info?.cycleDay?.replace('D', '') ?? null
@@ -14,10 +15,11 @@ function cycleBadgeNumber(entry: CalendarDayEntry): string | null {
     <div class="container-app">
       <h2 class="sr-only">Semana actual</h2>
       <div class="flex gap-2 md:gap-3 overflow-x-auto pb-2 -mx-1 px-1">
-        <div
+        <button
           v-for="(entry, i) in currentWeek"
           :key="entry.date"
-          class="flex-1 min-w-[60px] flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200"
+          class="flex-1 min-w-[60px] flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 cursor-pointer"
+          @click="selectDay(entry)"
           :class="[
             entry.isToday
               ? 'bg-secondary text-white shadow-lg shadow-secondary/20'
@@ -71,7 +73,7 @@ function cycleBadgeNumber(entry: CalendarDayEntry): string | null {
               entry.info.special === 'celebracion' ? 'bg-celebracion' : '',
             ]"
           />
-        </div>
+        </button>
       </div>
     </div>
   </section>

@@ -184,13 +184,73 @@ export function getTodayInfo(): { dateKey: string; info: CalendarDayInfo | null 
 }
 
 // ---------------------------------------------------------------------------
+// getNextSchoolDayInfo — finds the next school day with a cycle day
+// Used by the evening notification to tell users about tomorrow (or the next
+// school day if tomorrow is a weekend/holiday).
+// ---------------------------------------------------------------------------
+export function getNextSchoolDayInfo(): {
+  dateKey: string
+  info: CalendarDayInfo | null
+  isTomorrow: boolean
+} {
+  const now = new Date()
+  const colombiaOffset = -5 * 60
+  const utcMs = now.getTime() + now.getTimezoneOffset() * 60000
+  const colombiaMs = utcMs + colombiaOffset * 60000
+  const colombiaDate = new Date(colombiaMs)
+
+  const tomorrow = new Date(colombiaDate.getFullYear(), colombiaDate.getMonth(), colombiaDate.getDate() + 1)
+  const tomorrowKey = formatDate(tomorrow)
+
+  const cursor = new Date(tomorrow)
+
+  // Look ahead up to 10 days (covers weekends + possible consecutive holidays)
+  for (let i = 0; i < 10; i++) {
+    if (!isWeekend(cursor)) {
+      const dateKey = formatDate(cursor)
+      const info = calendarData[dateKey]
+      if (info?.cycleDay) {
+        return { dateKey, info, isTomorrow: dateKey === tomorrowKey }
+      }
+    }
+    cursor.setDate(cursor.getDate() + 1)
+  }
+
+  return { dateKey: formatDate(cursor), info: null, isTomorrow: false }
+}
+
+// ---------------------------------------------------------------------------
 // buildNotificationMessage — generates push notification content
+// Supports morning (about today) and evening (about next school day) slots.
 // ---------------------------------------------------------------------------
 export function buildNotificationMessage(
   dateKey: string,
   info: CalendarDayInfo | null,
+  slot: 'morning' | 'evening' = 'morning',
+  isTomorrow: boolean = true,
 ): { title: string; body: string } {
-  // Outside the school calendar or no entry
+  // ----- Evening slot: about the next school day -----
+  if (slot === 'evening') {
+    if (!info || !info.cycleDay) {
+      return {
+        title: 'SEK Calendario',
+        body: 'No hay clases programadas proximamente.',
+      }
+    }
+    const dayNumber = info.cycleDay.replace('D', '')
+    if (isTomorrow) {
+      return {
+        title: `Manana: Dia ${dayNumber}`,
+        body: `Manana es dia ${info.cycleDay} del ciclo rotativo.`,
+      }
+    }
+    return {
+      title: `Proximo dia: ${info.cycleDay}`,
+      body: `El proximo dia de clases es dia ${dayNumber} del ciclo rotativo.`,
+    }
+  }
+
+  // ----- Morning slot (default): about today -----
   if (!info) {
     return {
       title: 'SEK Calendario',
@@ -198,7 +258,6 @@ export function buildNotificationMessage(
     }
   }
 
-  // Cycle day present (normal school day)
   if (info.cycleDay) {
     const dayNumber = info.cycleDay.replace('D', '')
     return {
@@ -207,7 +266,6 @@ export function buildNotificationMessage(
     }
   }
 
-  // Special day without cycle (holiday, recess, vacation, holy week, closing, celebration)
   if (info.label) {
     return {
       title: 'SEK Calendario',
@@ -215,7 +273,6 @@ export function buildNotificationMessage(
     }
   }
 
-  // Fallback
   return {
     title: 'SEK Calendario',
     body: 'Hoy no hay clases programadas.',

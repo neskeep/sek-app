@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { todayCycleDay, todayInfo, currentDate, isSchoolDay } = useCalendar()
+const { share, copied } = useShare()
 
 const cycleNumber = computed(() => todayCycleDay.value?.replace('D', '') ?? null)
 
@@ -19,6 +20,20 @@ const formattedDate = computed(() => {
 
 const specialLabel = computed(() => todayInfo.value?.label ?? null)
 const specialType = computed(() => todayInfo.value?.special ?? null)
+
+const shareText = computed(() => {
+  if (cycleNumber.value && isSchoolDay.value) {
+    return `Hoy es dia ${cycleNumber.value} del ciclo rotativo - ${formattedDate.value} (SEK Colombia)`
+  }
+  if (specialLabel.value) {
+    return `${specialLabel.value} - ${formattedDate.value} (SEK Colombia)`
+  }
+  return `${formattedDate.value} - No hay clases hoy (SEK Colombia)`
+})
+
+function handleShare() {
+  share(shareText.value)
+}
 
 const mounted = ref(false)
 onMounted(() => {
@@ -105,6 +120,21 @@ onMounted(() => {
         >
           Fin de semana
         </p>
+
+        <!-- Share button -->
+        <button
+          class="mt-5 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-500 hover:text-primary bg-white/80 hover:bg-white rounded-full border border-gray-200 transition-all active:scale-[0.97]"
+          :class="mounted ? 'animate-fade-up' : 'opacity-0'"
+          style="animation-delay: 0.4s;"
+          @click="handleShare"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+            <polyline points="16 6 12 2 8 6" />
+            <line x1="12" y1="2" x2="12" y2="15" />
+          </svg>
+          {{ copied ? 'Copiado!' : 'Compartir' }}
+        </button>
       </div>
     </div>
   </section>

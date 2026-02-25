@@ -7,9 +7,12 @@ interface Props {
 
 const props = defineProps<Props>()
 
+const { selectDay } = useDayDetail()
 const { getSpecialDayColor, getCycleDayColor } = useCalendar()
 
 const cycleNumber = computed(() => props.entry.info?.cycleDay?.replace('D', '') ?? null)
+
+const isClickable = computed(() => props.entry.isCurrentMonth)
 
 const ariaLabel = computed(() => {
   const parts = [String(props.entry.dayOfMonth)]
@@ -25,13 +28,21 @@ const ariaLabel = computed(() => {
   return parts.join(', ')
 })
 
+function handleClick() {
+  if (isClickable.value) {
+    selectDay(props.entry)
+  }
+}
+
 const cellClasses = computed(() => {
-  const classes: string[] = ['day-cell', 'cursor-default']
+  const classes: string[] = ['day-cell']
 
   if (!props.entry.isCurrentMonth) {
-    classes.push('opacity-30')
+    classes.push('opacity-30 cursor-default')
     return classes
   }
+
+  classes.push('cursor-pointer')
 
   if (props.entry.isWeekend) {
     classes.push('opacity-50')
@@ -53,7 +64,7 @@ const cellClasses = computed(() => {
 </script>
 
 <template>
-  <div :class="cellClasses" role="gridcell" :aria-label="ariaLabel">
+  <div :class="cellClasses" role="gridcell" :aria-label="ariaLabel" @click="handleClick">
     <!-- Day number -->
     <span
       class="text-sm font-semibold leading-none"

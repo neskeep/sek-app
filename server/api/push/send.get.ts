@@ -11,7 +11,7 @@ interface StoredSubscription {
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
 
-  // ----- Authorization check -----
+  // ----- Authorization: Vercel Cron sends Authorization: Bearer <CRON_SECRET> -----
   const authHeader = getHeader(event, 'authorization')
   if (!authHeader || authHeader !== `Bearer ${config.cronSecret}`) {
     throw createError({
@@ -27,16 +27,34 @@ export default defineEventHandler(async (event) => {
     config.vapidPrivateKey,
   )
 
-  // ----- Build notification content -----
-  const { dateKey, info } = getTodayInfo()
-  const { title, body } = buildNotificationMessage(dateKey, info)
+  // ----- Determine notification slot from query parameter -----
+  const query = getQuery(event)
+  const slot: 'morning' | 'evening' = query.slot === 'evening' ? 'evening' : 'morning'
 
-  // ----- Deduplication: prevent double notifications on the same day -----
+  // ----- Build notification content based on slot -----
+  let dateKey: string
+  let notifInfo: Parameters<typeof buildNotificationMessage>[1]
+  let isTomorrow = true
+
+  if (slot === 'evening') {
+    const next = getNextSchoolDayInfo()
+    dateKey = next.dateKey
+    notifInfo = next.info
+    isTomorrow = next.isTomorrow
+  } else {
+    const today = getTodayInfo()
+    dateKey = today.dateKey
+    notifInfo = today.info
+  }
+
+  const { title, body } = buildNotificationMessage(dateKey, notifInfo, slot, isTomorrow)
+
+  // ----- Deduplication per slot: prevent double notifications -----
   const redis = getRedis()
-  const dedupKey = `push:last-sent:${dateKey}`
+  const dedupKey = `push:last-sent:${slot}:${dateKey}`
   const alreadySent = await redis.get(dedupKey)
   if (alreadySent) {
-    return { ok: true, sent: 0, failed: 0, date: dateKey, skipped: true }
+    return { ok: true, sent: 0, failed: 0, date: dateKey, slot, skipped: true }
   }
   // Mark as sent with 24h expiry
   await redis.set(dedupKey, new Date().toISOString(), { ex: 86400 })
@@ -53,7 +71,7 @@ export default defineEventHandler(async (event) => {
   const endpoints = await redis.smembers('push:endpoints')
 
   if (!endpoints || endpoints.length === 0) {
-    return { ok: true, sent: 0, failed: 0, date: dateKey }
+    return { ok: true, sent: 0, failed: 0, date: dateKey, slot }
   }
 
   let sent = 0
@@ -64,7 +82,6 @@ export default defineEventHandler(async (event) => {
     try {
       const subJson = await redis.get<string>(`push:sub:${endpoint}`)
       if (!subJson) {
-        // Stale endpoint in set with no subscription data — clean up
         await redis.srem('push:endpoints', endpoint)
         failed++
         return
@@ -88,7 +105,6 @@ export default defineEventHandler(async (event) => {
     }
     catch (error: unknown) {
       failed++
-      // Clean up dead subscriptions (gone or not found)
       const statusCode = (error as { statusCode?: number })?.statusCode
       if (statusCode === 404 || statusCode === 410) {
         await Promise.all([
@@ -101,5 +117,5 @@ export default defineEventHandler(async (event) => {
 
   await Promise.all(sendPromises)
 
-  return { ok: true, sent, failed, date: dateKey }
+  return { ok: true, sent, failed, date: dateKey, slot }
 })

@@ -32,5 +32,8 @@ useSeoMeta({
 
     <!-- Push Notification Banner -->
     <FeaturesNotificationBanner />
+
+    <!-- Day Detail Sheet -->
+    <FeaturesDayDetailSheet />
   </div>
 </template>
