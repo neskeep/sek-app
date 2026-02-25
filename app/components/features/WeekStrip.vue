@@ -11,7 +11,7 @@ function cycleBadgeNumber(entry: CalendarDayEntry): string | null {
 </script>
 
 <template>
-  <section class="py-4 md:py-6">
+  <section class="py-4 md:py-6" role="region" aria-label="Semana actual">
     <div class="container-app">
       <h2 class="sr-only">Semana actual</h2>
       <div class="flex gap-2 md:gap-3 overflow-x-auto pb-2 -mx-1 px-1">

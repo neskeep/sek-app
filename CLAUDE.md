@@ -9,7 +9,6 @@ PWA del calendario escolar del Colegio SEK Colombia con sistema rotativo de 6 di
 - **PWA:** @vite-pwa/nuxt (Workbox generateSW + precache)
 - **State:** Pinia
 - **Utilities:** VueUse
-- **Validation:** Zod
 - **Package Manager:** pnpm
 - **Deploy:** GitHub Pages via GitHub Actions
 

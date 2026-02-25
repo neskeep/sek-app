@@ -1,1 +1,4 @@
+User-agent: *
+Disallow: /
 
+# Este sitio es privado y no debe ser indexado

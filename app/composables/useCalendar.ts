@@ -138,7 +138,12 @@ export function useCalendar() {
   // ---------------------------------------------------------------------------
   // Navegacion
   // ---------------------------------------------------------------------------
+  const canGoNext = computed(() => !(viewYear.value === 2026 && viewMonth.value >= 5))
+  const canGoPrev = computed(() => !(viewYear.value === 2025 && viewMonth.value <= 7))
+
   function nextMonth(): void {
+    // Limite: Junio 2026 (mes 5)
+    if (viewYear.value === 2026 && viewMonth.value >= 5) return
     if (viewMonth.value === 11) {
       viewMonth.value = 0
       viewYear.value++
@@ -148,6 +153,8 @@ export function useCalendar() {
   }
 
   function prevMonth(): void {
+    // Limite: Agosto 2025 (mes 7)
+    if (viewYear.value === 2025 && viewMonth.value <= 7) return
     if (viewMonth.value === 0) {
       viewMonth.value = 11
       viewYear.value--
@@ -185,6 +192,8 @@ export function useCalendar() {
     nextMonth,
     prevMonth,
     goToToday,
+    canGoNext,
+    canGoPrev,
     getSpecialDayColor,
     getCycleDayColor,
   }

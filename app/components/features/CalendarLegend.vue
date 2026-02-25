@@ -11,13 +11,14 @@ const legendItems = [
 </script>
 
 <template>
-  <section class="py-6 md:py-8">
+  <section class="py-6 md:py-8" aria-label="Leyenda del calendario">
     <div class="container-app max-w-2xl">
-      <div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+      <div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2" role="list">
         <div
           v-for="item in legendItems"
           :key="item.label"
           class="flex items-center gap-1.5"
+          role="listitem"
         >
           <span
             class="w-2.5 h-2.5 rounded-full shrink-0"

@@ -41,6 +41,8 @@ onMounted(() => {
         <div
           class="hero-circle w-40 h-40 md:w-52 md:h-52 mb-6 md:mb-8"
           :class="mounted ? 'animate-hero-enter' : 'opacity-0'"
+          role="img"
+          aria-label="Dia actual del ciclo"
         >
           <div v-if="cycleNumber && isSchoolDay" class="flex flex-col items-center">
             <span class="text-6xl md:text-7xl font-bold text-white leading-none tracking-tight">

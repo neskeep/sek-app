@@ -8,6 +8,8 @@ const {
   nextMonth,
   prevMonth,
   goToToday,
+  canGoNext,
+  canGoPrev,
 } = useCalendar()
 
 const weekdayHeaders = ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom']
@@ -32,6 +34,8 @@ onMounted(() => {
       <div class="flex items-center justify-between mb-6 md:mb-8">
         <button
           class="btn-icon text-gray-500 hover:text-primary"
+          :class="{ 'opacity-30 cursor-not-allowed hover:bg-transparent': !canGoPrev }"
+          :disabled="!canGoPrev"
           aria-label="Mes anterior"
           @click="prevMonth"
         >
@@ -51,6 +55,8 @@ onMounted(() => {
 
         <button
           class="btn-icon text-gray-500 hover:text-primary"
+          :class="{ 'opacity-30 cursor-not-allowed hover:bg-transparent': !canGoNext }"
+          :disabled="!canGoNext"
           aria-label="Mes siguiente"
           @click="nextMonth"
         >
@@ -67,6 +73,7 @@ onMounted(() => {
       >
         <button
           class="text-sm font-medium text-secondary hover:text-secondary/80 transition-colors flex items-center gap-1.5"
+          aria-label="Ir a hoy"
           @click="goToToday"
         >
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -91,12 +98,14 @@ onMounted(() => {
       <div
         class="border border-gray-100 rounded-xl overflow-hidden bg-white shadow-sm"
         :class="mounted ? 'animate-fade-up' : 'opacity-0'"
+        role="grid"
       >
         <div
           v-for="(week, weekIndex) in monthGrid"
           :key="weekIndex"
           class="grid grid-cols-7"
           :class="weekIndex > 0 ? 'border-t border-gray-50' : ''"
+          role="row"
         >
           <FeaturesDayCell
             v-for="entry in week"
