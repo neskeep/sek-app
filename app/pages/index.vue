@@ -20,5 +20,8 @@ definePageMeta({ layout: 'default' })
 
     <!-- Legend -->
     <FeaturesCalendarLegend />
+
+    <!-- PWA Install Banner -->
+    <FeaturesInstallBanner />
   </div>
 </template>
