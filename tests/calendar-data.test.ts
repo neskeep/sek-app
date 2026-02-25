@@ -8,59 +8,79 @@ describe('Calendar Data', () => {
   })
 
   it('should have entries for all school days', () => {
-    // Should have 200+ entries
     const entries = Object.keys(calendarData)
     expect(entries.length).toBeGreaterThan(200)
   })
 
-  it('should start on August 11, 2025 with D1', () => {
+  it('should mark August 11 as institutional day (no cycle)', () => {
     const firstDay = calendarData['2025-08-11']
     expect(firstDay).toBeDefined()
-    expect(firstDay!.cycleDay).toBe('D1')
+    expect(firstDay!.special).toBe('receso')
+    expect(firstDay!.label).toBe('Jornada institucional')
+    expect(firstDay!.cycleDay).toBeUndefined()
+  })
+
+  it('should start cycle on August 12 with D1', () => {
+    expect(calendarData['2025-08-12']!.cycleDay).toBe('D1')
   })
 
   it('should have D1-D6 cycle rotating correctly', () => {
-    // First 6 school days should be D1 through D6
-    // Aug 11 (Mon) = D1, Aug 12 (Tue) = D2, ..., Aug 14 (Thu) = D4
-    // Aug 15 (Fri) = D5, Aug 18 is festivo, Aug 19 (Tue) = D6
-    expect(calendarData['2025-08-11']!.cycleDay).toBe('D1')
-    expect(calendarData['2025-08-12']!.cycleDay).toBe('D2')
-    expect(calendarData['2025-08-13']!.cycleDay).toBe('D3')
-    expect(calendarData['2025-08-14']!.cycleDay).toBe('D4')
-    expect(calendarData['2025-08-15']!.cycleDay).toBe('D5')
+    // Aug 12 (Tue) = D1, Aug 13 (Wed) = D2, Aug 14 (Thu) = D3, Aug 15 (Fri) = D4
+    expect(calendarData['2025-08-12']!.cycleDay).toBe('D1')
+    expect(calendarData['2025-08-13']!.cycleDay).toBe('D2')
+    expect(calendarData['2025-08-14']!.cycleDay).toBe('D3')
+    expect(calendarData['2025-08-15']!.cycleDay).toBe('D4')
     // Aug 18 is festivo (Asuncion de la Virgen)
     expect(calendarData['2025-08-18']!.special).toBe('festivo')
     expect(calendarData['2025-08-18']!.cycleDay).toBeUndefined()
-    // Aug 19 should be D6 (festivo doesn't advance cycle)
-    expect(calendarData['2025-08-19']!.cycleDay).toBe('D6')
+    // Aug 19 should be D5 (festivo doesn't advance cycle)
+    expect(calendarData['2025-08-19']!.cycleDay).toBe('D5')
+    // Continue: Aug 20 = D6, Aug 21 = D1
+    expect(calendarData['2025-08-20']!.cycleDay).toBe('D6')
+    expect(calendarData['2025-08-21']!.cycleDay).toBe('D1')
   })
 
   it('should not have entries on weekends', () => {
-    // Aug 16, 2025 is Saturday
     expect(calendarData['2025-08-16']).toBeUndefined()
-    // Aug 17, 2025 is Sunday
     expect(calendarData['2025-08-17']).toBeUndefined()
   })
 
   it('should mark holidays correctly', () => {
     expect(calendarData['2025-08-18']!.special).toBe('festivo')
     expect(calendarData['2025-08-18']!.label).toBe('Asuncion de la Virgen')
-
     expect(calendarData['2025-10-13']!.special).toBe('festivo')
     expect(calendarData['2025-11-03']!.special).toBe('festivo')
+    expect(calendarData['2026-01-12']!.special).toBe('festivo')
     expect(calendarData['2026-05-01']!.special).toBe('festivo')
   })
 
-  it('should mark vacation days correctly', () => {
-    // Dec 15, 2025 to Jan 19, 2026 (weekdays)
-    expect(calendarData['2025-12-15']!.special).toBe('vacaciones')
-    expect(calendarData['2026-01-19']!.special).toBe('vacaciones')
+  it('should mark December school days correctly (Dec 15-18)', () => {
+    // Per official schedule, Dec 15-18 ARE school days
+    expect(calendarData['2025-12-15']!.cycleDay).toBe('D2')
+    expect(calendarData['2025-12-16']!.cycleDay).toBe('D3')
+    expect(calendarData['2025-12-17']!.cycleDay).toBe('D4')
+    expect(calendarData['2025-12-18']!.cycleDay).toBe('D5')
+  })
+
+  it('should mark Dec 19 as Christmas celebration (no cycle)', () => {
+    expect(calendarData['2025-12-19']!.special).toBe('celebracion')
+    expect(calendarData['2025-12-19']!.label).toBe('Celebracion de navidad')
+    expect(calendarData['2025-12-19']!.cycleDay).toBeUndefined()
+  })
+
+  it('should mark vacation days correctly (Dec 22 to Jan 13)', () => {
+    expect(calendarData['2025-12-22']!.special).toBe('vacaciones')
+    expect(calendarData['2026-01-09']!.special).toBe('vacaciones')
+    expect(calendarData['2026-01-13']!.special).toBe('vacaciones')
     // Vacation days should not have cycleDay
-    expect(calendarData['2025-12-15']!.cycleDay).toBeUndefined()
+    expect(calendarData['2025-12-22']!.cycleDay).toBeUndefined()
+  })
+
+  it('should resume cycle correctly after vacation (Jan 14 = D6)', () => {
+    expect(calendarData['2026-01-14']!.cycleDay).toBe('D6')
   })
 
   it('should mark recess days correctly', () => {
-    // Oct 6-10, 2025
     expect(calendarData['2025-10-06']!.special).toBe('receso')
     expect(calendarData['2025-10-10']!.special).toBe('receso')
   })
@@ -72,13 +92,20 @@ describe('Calendar Data', () => {
     expect(calendarData['2026-04-03']!.label).toBe('Viernes Santo')
   })
 
-  it('should mark celebrations WITH cycle day', () => {
-    // Celebrations advance the cycle
-    const halloween = calendarData['2025-10-31']
-    expect(halloween).toBeDefined()
-    expect(halloween!.special).toBe('celebracion')
-    expect(halloween!.label).toBe('Dia de Disfraces')
-    expect(halloween!.cycleDay).toBeDefined() // has a cycle day
+  it('should have Oct 31 as regular cycle day D4 (no special)', () => {
+    expect(calendarData['2025-10-31']!.cycleDay).toBe('D4')
+    expect(calendarData['2025-10-31']!.special).toBeUndefined()
+  })
+
+  it('should have Feb 25 as D6', () => {
+    expect(calendarData['2026-02-25']!.cycleDay).toBe('D6')
+  })
+
+  it('should mark end of activities Jun 9-11 (no cycle)', () => {
+    expect(calendarData['2026-06-09']!.special).toBe('receso')
+    expect(calendarData['2026-06-10']!.special).toBe('receso')
+    expect(calendarData['2026-06-11']!.special).toBe('receso')
+    expect(calendarData['2026-06-09']!.cycleDay).toBeUndefined()
   })
 
   it('should end with clausura on June 12, 2026', () => {

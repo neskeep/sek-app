@@ -1,6 +1,7 @@
 // ---------------------------------------------------------------------------
 // Server-side calendar logic (self-contained copy of app/data/calendar-2025-2026.ts)
 // Cannot import from app/ — server and app are separate contexts in Nuxt.
+// Based on the official SEK Colombia 2025-2026 cycle schedule.
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
@@ -59,7 +60,7 @@ function weekdaysInRange(
 }
 
 // ---------------------------------------------------------------------------
-// Special dates
+// Special dates (based on official SEK Colombia 2025-2026 cycle schedule)
 // ---------------------------------------------------------------------------
 interface SpecialDayDef {
   type: SpecialDayType
@@ -67,35 +68,39 @@ interface SpecialDayDef {
 }
 
 const specialDates: Record<string, SpecialDayDef> = {
+  // Institutional day (no cycle, first day of school year)
+  '2025-08-11': { type: 'receso', label: 'Jornada institucional' },
+
   // Colombian public holidays (within school year)
   '2025-08-18': { type: 'festivo', label: 'Asuncion de la Virgen' },
   '2025-10-13': { type: 'festivo', label: 'Dia de la Raza' },
   '2025-11-03': { type: 'festivo', label: 'Todos los Santos' },
   '2025-11-17': { type: 'festivo', label: 'Independencia de Cartagena' },
   '2025-12-08': { type: 'festivo', label: 'Inmaculada Concepcion' },
+  '2026-01-12': { type: 'festivo', label: 'Dia de los Reyes Magos' },
   '2026-03-23': { type: 'festivo', label: 'San Jose' },
   '2026-05-01': { type: 'festivo', label: 'Dia del Trabajo' },
   '2026-05-18': { type: 'festivo', label: 'Ascension del Senor' },
   '2026-06-08': { type: 'festivo', label: 'Corpus Christi' },
 
+  // Christmas celebration (no cycle day, does not advance rotation)
+  '2025-12-19': { type: 'celebracion', label: 'Celebracion de navidad' },
+
   // Closing ceremony
   '2026-06-12': { type: 'clausura', label: 'Clausura' },
-
-  // Celebrations (have cycleDay + special, advance cycle)
-  '2025-10-31': { type: 'celebracion', label: 'Dia de Disfraces' },
-  '2026-04-23': { type: 'celebracion', label: 'Dia del Idioma' },
-  '2026-05-15': { type: 'celebracion', label: 'Dia del Maestro' },
 }
 
 // October recess: 2025-10-06 to 2025-10-10
 for (const date of weekdaysInRange(2025, 9, 6, 2025, 9, 10)) {
-  specialDates[date] = { type: 'receso', label: 'Receso escolar' }
+  specialDates[date] = { type: 'receso', label: 'Semana de receso' }
 }
 
-// End-of-year vacation: 2025-12-15 to 2026-01-19
-for (const date of weekdaysInRange(2025, 11, 15, 2026, 0, 19)) {
+// End-of-year vacation: 2025-12-22 to 2026-01-11
+for (const date of weekdaysInRange(2025, 11, 22, 2026, 0, 11)) {
   specialDates[date] = { type: 'vacaciones', label: 'Vacaciones' }
 }
+// Jan 13 explicitly marked as vacation in the schedule
+specialDates['2026-01-13'] = { type: 'vacaciones', label: 'Vacaciones' }
 
 // Holy Week: 2026-03-30 to 2026-04-03
 const semanaSantaLabels: Record<string, string> = {
@@ -109,8 +114,15 @@ for (const [date, label] of Object.entries(semanaSantaLabels)) {
   specialDates[date] = { type: 'semana-santa', label }
 }
 
+// End of activities: Jun 9-11 (no cycle, before closing ceremony)
+for (const date of weekdaysInRange(2026, 5, 9, 2026, 5, 11)) {
+  specialDates[date] = { type: 'receso', label: 'Fin de actividades' }
+}
+
 // ---------------------------------------------------------------------------
 // Calendar generator
+// All special days have NO cycleDay and do NOT advance the rotation.
+// Only regular school days advance the D1-D6 cycle.
 // ---------------------------------------------------------------------------
 const CYCLE_DAYS: CycleDay[] = ['D1', 'D2', 'D3', 'D4', 'D5', 'D6']
 
@@ -128,26 +140,13 @@ function generateCalendar(): Record<string, CalendarDayInfo> {
       const special = specialDates[dateKey]
 
       if (special) {
-        if (special.type === 'celebracion') {
-          // Celebrations: have cycleDay AND special, advance the cycle
-          result[dateKey] = {
-            date: dateKey,
-            cycleDay: CYCLE_DAYS[cycleIndex % 6],
-            special: special.type,
-            label: special.label,
-          }
-          cycleIndex++
+        // Special days: no cycleDay, do NOT advance the cycle
+        result[dateKey] = {
+          date: dateKey,
+          special: special.type,
+          label: special.label,
         }
-        else {
-          // Holidays, recesses, vacations, holy week, closing: no cycleDay, do NOT advance the cycle
-          result[dateKey] = {
-            date: dateKey,
-            special: special.type,
-            label: special.label,
-          }
-        }
-      }
-      else {
+      } else {
         // Normal school day
         result[dateKey] = {
           date: dateKey,
@@ -199,26 +198,16 @@ export function buildNotificationMessage(
     }
   }
 
-  // Cycle day present (normal school day or celebration with cycle)
+  // Cycle day present (normal school day)
   if (info.cycleDay) {
     const dayNumber = info.cycleDay.replace('D', '')
-
-    // Celebration with cycle day
-    if (info.special === 'celebracion' && info.label) {
-      return {
-        title: `Dia ${dayNumber} del ciclo`,
-        body: `${info.label} - ${dateKey}`,
-      }
-    }
-
-    // Normal cycle day
     return {
       title: `Dia ${dayNumber} del ciclo`,
       body: `Hoy es dia ${info.cycleDay} del ciclo rotativo.`,
     }
   }
 
-  // Special day without cycle (holiday, recess, vacation, holy week, closing)
+  // Special day without cycle (holiday, recess, vacation, holy week, closing, celebration)
   if (info.label) {
     return {
       title: 'SEK Calendario',
