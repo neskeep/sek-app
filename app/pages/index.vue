@@ -6,6 +6,9 @@ useSeoMeta({
   description: 'Calendario escolar del Colegio SEK Colombia con sistema rotativo de 6 dias',
   robots: 'noindex, nofollow',
 })
+
+// Badge API: show cycle day number on app icon
+useAppBadge()
 </script>
 
 <template>

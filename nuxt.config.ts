@@ -80,6 +80,15 @@ export default defineNuxtConfig({
           purpose: 'maskable',
         },
       ],
+      shortcuts: [
+        {
+          name: 'Dia de hoy',
+          short_name: 'Hoy',
+          description: 'Ver el dia del ciclo de hoy',
+          url: '/',
+          icons: [{ src: 'icons/pwa-192x192.png', sizes: '192x192' }],
+        },
+      ],
     },
     workbox: {
       navigateFallback: undefined,
