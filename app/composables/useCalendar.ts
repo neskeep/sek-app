@@ -52,10 +52,15 @@ const CYCLE_DAY_COLORS: Record<CycleDay, string> = {
 export function useCalendar() {
   const now = useNow({ interval: 60000 })
 
-  // Fecha actual (solo ano/mes/dia, sin hora)
-  const currentDate = computed(() =>
-    new Date(now.value.getFullYear(), now.value.getMonth(), now.value.getDate())
-  )
+  // Fecha actual en zona horaria de Colombia (UTC-5), sin componente de hora.
+  // Esto garantiza que usuarios en otras zonas horarias vean el dia correcto.
+  const currentDate = computed(() => {
+    const colombiaOffset = -5 * 60 // Colombia UTC-5 en minutos
+    const utcMs = now.value.getTime() + now.value.getTimezoneOffset() * 60000
+    const colombiaMs = utcMs + colombiaOffset * 60000
+    const colombiaDate = new Date(colombiaMs)
+    return new Date(colombiaDate.getFullYear(), colombiaDate.getMonth(), colombiaDate.getDate())
+  })
 
   const todayKey = computed(() => formatDate(currentDate.value))
 

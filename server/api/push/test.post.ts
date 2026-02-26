@@ -6,8 +6,7 @@ export default defineEventHandler(async (event) => {
 
   // Verificar autorizacion
   const authHeader = getHeader(event, 'authorization')
-  const token = authHeader?.replace('Bearer ', '')
-  if (token !== config.cronSecret) {
+  if (!authHeader || authHeader !== `Bearer ${config.cronSecret}`) {
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }
 

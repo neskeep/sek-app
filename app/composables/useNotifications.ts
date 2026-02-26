@@ -49,6 +49,10 @@ export function useNotifications() {
   // ---------------------------------------------------------------------------
   async function subscribe(): Promise<boolean> {
     if (!isSupported.value) return false
+    if (!config.public.vapidPublicKey) {
+      console.error('VAPID public key is not configured')
+      return false
+    }
     isLoading.value = true
     try {
       const perm = await Notification.requestPermission()
